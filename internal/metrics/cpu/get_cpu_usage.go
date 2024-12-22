@@ -7,21 +7,19 @@ import (
 	"time"
 )
 
-func GetCPUUsage() ([]string, error) {
+func GetCPUUsage() []string {
 	var CPUUsages []string
 
 	initialStat, err := linux.ReadStat("/proc/stat")
 	if err != nil {
-		log.Printf("Error during reading /proc/stat: %v\n\n", err)
-		return nil, err
+		log.Fatalf("Error during reading /proc/stat: %v\n\n", err)
 	}
 
 	time.Sleep(3 * time.Second)
 
 	newStat, err := linux.ReadStat("/proc/stat")
 	if err != nil {
-		log.Printf("Error during reading /proc/stat: %v\n\n", err)
-		return nil, err
+		log.Fatalf("Error during reading /proc/stat: %v\n\n", err)
 	}
 
 	for i, initialCPU := range initialStat.CPUStats {
@@ -38,5 +36,5 @@ func GetCPUUsage() ([]string, error) {
 		CPUUsages = append(CPUUsages, strconv.FormatFloat(cpuUsage, 'f', 2, 32))
 	}
 
-	return CPUUsages, nil
+	return CPUUsages
 }
