@@ -9,6 +9,7 @@
 *.dylib
 go.sum
 .idea
+vendor
 
 
 # Test binary, build with `go test -c`
