@@ -19,6 +19,7 @@ func Run() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	log.Println("Connected to NATS")
 
 	globalConf = yaml.UnmarshalGlobalConfig()
 	failCount = 0
