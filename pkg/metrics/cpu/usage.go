@@ -7,8 +7,8 @@ import (
 	"time"
 )
 
-func GetCPUUsage() []string {
-	var CPUUsages []string
+func Usage() []string {
+	var usages []string
 
 	initialStat, err := linux.ReadStat("/proc/stat")
 	if err != nil {
@@ -26,15 +26,15 @@ func GetCPUUsage() []string {
 		newCPU := newStat.CPUStats[i]
 
 		idleTimeDiff := newCPU.Idle - initialCPU.Idle
-		totalTimeDiff := GetTotalCPUWorking(newCPU) - GetTotalCPUWorking(initialCPU)
+		totalTimeDiff := TotalWorking(newCPU) - TotalWorking(initialCPU)
 
 		if totalTimeDiff == 0 {
 			continue
 		}
 
 		cpuUsage := 100.0 * float64(totalTimeDiff-idleTimeDiff) / float64(totalTimeDiff)
-		CPUUsages = append(CPUUsages, strconv.FormatFloat(cpuUsage, 'f', 2, 32))
+		usages = append(usages, strconv.FormatFloat(cpuUsage, 'f', 2, 32))
 	}
 
-	return CPUUsages
+	return usages
 }

@@ -8,11 +8,11 @@ import (
 )
 
 func CollectMetrics() *DTO.Metrics {
-	metricz := new(DTO.Metrics)
+	metrics := new(DTO.Metrics)
 
-	metricz.CPUUsage = cpu.GetCPUUsage()
-	metricz.RAMUsage = ram.GetRAMUsage()
-	metricz.DiskSpace = disk.GetDiskFreeSpace()
-	metricz.DiskUsage = disk.GetDiskUsage()
-	return metricz
+	metrics.CPU.Usage = cpu.Usage()
+	metrics.RAM.Usage = ram.Usage()
+	metrics.Disk.Space = disk.FreeSpace()
+	metrics.Disk.Usage = disk.Usage()
+	return metrics
 }

@@ -9,7 +9,7 @@ import (
 )
 
 func Run() {
-	metrciz := new(DTO.Metrics)
+	metrics := new(DTO.Metrics)
 
 	nc, err := nats.Connect(nats.DefaultURL)
 	if err != nil {
@@ -18,12 +18,12 @@ func Run() {
 	log.Println("Connected to NATS")
 
 	_, err = nc.Subscribe("metrics", func(msg *nats.Msg) {
-		err = easyjson.Unmarshal(msg.Data, metrciz)
+		err = easyjson.Unmarshal(msg.Data, metrics)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		analyze.ProcessMetrics(metrciz)
+		analyze.ProcessMetrics(metrics)
 	})
 
 	if err != nil {

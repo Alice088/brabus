@@ -6,7 +6,7 @@ import (
 	"strconv"
 )
 
-func GetRAMUsage() string {
+func Usage() string {
 	v, err := mem.VirtualMemory()
 	if err != nil {
 		log.Fatalln("Error during getting RAM usage:", err)

@@ -5,7 +5,7 @@ import (
 	"strconv"
 )
 
-func GetDiskUsage() string {
+func Usage() string {
 	diskUsage, _ := disk.Usage("/")
 	return strconv.FormatFloat(diskUsage.UsedPercent, 'f', 2, 32)
 }

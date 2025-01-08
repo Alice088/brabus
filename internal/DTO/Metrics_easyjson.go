@@ -36,35 +36,12 @@ func easyjson50d358d1DecodeBrabusInternalDTO(in *jlexer.Lexer, out *Metrics) {
 			continue
 		}
 		switch key {
-		case "cpu_usage":
-			if in.IsNull() {
-				in.Skip()
-				out.CPUUsage = nil
-			} else {
-				in.Delim('[')
-				if out.CPUUsage == nil {
-					if !in.IsDelim(']') {
-						out.CPUUsage = make([]string, 0, 4)
-					} else {
-						out.CPUUsage = []string{}
-					}
-				} else {
-					out.CPUUsage = (out.CPUUsage)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v1 string
-					v1 = string(in.String())
-					out.CPUUsage = append(out.CPUUsage, v1)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "ram_usage":
-			out.RAMUsage = string(in.String())
-		case "disk_space":
-			out.DiskSpace = string(in.String())
-		case "disk_usage":
-			out.DiskUsage = string(in.String())
+		case "cpu":
+			(out.CPU).UnmarshalEasyJSON(in)
+		case "ram":
+			easyjson50d358d1DecodeBrabusInternalDTO1(in, &out.RAM)
+		case "disk":
+			(out.Disk).UnmarshalEasyJSON(in)
 		default:
 			in.SkipRecursive()
 		}
@@ -80,35 +57,19 @@ func easyjson50d358d1EncodeBrabusInternalDTO(out *jwriter.Writer, in Metrics) {
 	first := true
 	_ = first
 	{
-		const prefix string = ",\"cpu_usage\":"
+		const prefix string = ",\"cpu\":"
 		out.RawString(prefix[1:])
-		if in.CPUUsage == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
-			out.RawString("null")
-		} else {
-			out.RawByte('[')
-			for v2, v3 := range in.CPUUsage {
-				if v2 > 0 {
-					out.RawByte(',')
-				}
-				out.String(string(v3))
-			}
-			out.RawByte(']')
-		}
+		(in.CPU).MarshalEasyJSON(out)
 	}
 	{
-		const prefix string = ",\"ram_usage\":"
+		const prefix string = ",\"ram\":"
 		out.RawString(prefix)
-		out.String(string(in.RAMUsage))
+		easyjson50d358d1EncodeBrabusInternalDTO1(out, in.RAM)
 	}
 	{
-		const prefix string = ",\"disk_space\":"
+		const prefix string = ",\"disk\":"
 		out.RawString(prefix)
-		out.String(string(in.DiskSpace))
-	}
-	{
-		const prefix string = ",\"disk_usage\":"
-		out.RawString(prefix)
-		out.String(string(in.DiskUsage))
+		(in.Disk).MarshalEasyJSON(out)
 	}
 	out.RawByte('}')
 }
@@ -135,4 +96,46 @@ func (v *Metrics) UnmarshalJSON(data []byte) error {
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *Metrics) UnmarshalEasyJSON(l *jlexer.Lexer) {
 	easyjson50d358d1DecodeBrabusInternalDTO(l, v)
+}
+func easyjson50d358d1DecodeBrabusInternalDTO1(in *jlexer.Lexer, out *RAM) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeFieldName(false)
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "usage":
+			out.Usage = string(in.String())
+		default:
+			in.SkipRecursive()
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjson50d358d1EncodeBrabusInternalDTO1(out *jwriter.Writer, in RAM) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	{
+		const prefix string = ",\"usage\":"
+		out.RawString(prefix[1:])
+		out.String(string(in.Usage))
+	}
+	out.RawByte('}')
 }
