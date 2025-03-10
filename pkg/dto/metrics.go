@@ -1,4 +1,4 @@
-package DTO
+package dto
 
 type Metrics struct {
 	CPU  CPU  `json:"cpu"`

@@ -1,7 +1,9 @@
 package analyze
 
-import "brabus/internal/DTO"
+import (
+	"brabus/pkg/dto"
+)
 
-func AnalyzeCPU(metrics *DTO.Metrics) {
+func AnalyzeCPU(metrics dto.Metrics) {
 
 }

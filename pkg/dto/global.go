@@ -1,4 +1,4 @@
-package configs
+package dto
 
 type Global struct {
 	Limits Limits `yaml:"limits"`

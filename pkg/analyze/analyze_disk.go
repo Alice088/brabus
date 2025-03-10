@@ -1,7 +1,9 @@
 package analyze
 
-import "brabus/internal/DTO"
+import (
+	"brabus/pkg/dto"
+)
 
-func AnalyzeDisk(metrics *DTO.Metrics) {
+func AnalyzeDisk(metrics dto.Metrics) {
 
 }

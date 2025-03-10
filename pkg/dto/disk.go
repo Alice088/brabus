@@ -1,4 +1,4 @@
-package DTO
+package dto
 
 type Disk struct {
 	Space string `json:"space"`

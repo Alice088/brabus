@@ -1,7 +1,9 @@
 package analyze
 
-import "brabus/internal/DTO"
+import (
+	"brabus/pkg/dto"
+)
 
-func AnalyzeRAM(metrics *DTO.Metrics) {
+func AnalyzeRAM(metrics dto.Metrics) {
 
 }
