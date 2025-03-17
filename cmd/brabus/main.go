@@ -1,58 +1,52 @@
 package main
 
 import (
-	config "brabus/pkg/dto"
+	"brabus/pkg/app/brabus"
+	"brabus/pkg/dto"
 	"brabus/pkg/env"
 	"brabus/pkg/logger"
-	"brabus/pkg/metrics"
 	"brabus/pkg/yaml"
-	"github.com/mailru/easyjson"
 	"github.com/nats-io/nats.go"
 	"github.com/pkg/errors"
+	"log"
+	"os"
 	"time"
 )
 
 func main() {
 	env.Init()
-	log, closeLog := logger.Init()
+	zerolog, closeLog := logger.Init()
 	defer closeLog()
 
-	var rawBytes []byte
-	var failCount int
-	var globalConf config.Global
+	failCount := 0
+	tick := time.Tick(2 * time.Second)
+	quit := make(chan int)
+	globalConf := yaml.UnmarshalGlobalConfig()
 
 	nc, err := nats.Connect(nats.DefaultURL)
 	if err != nil {
-		log.Fatal().Stack().Err(errors.Wrap(err, err.Error())).Str("NATS_URL", nats.DefaultURL).Msg("Error connecting to nats server")
+		zerolog.Fatal().Stack().
+			Str("NATS_URL", nats.DefaultURL).
+			Err(errors.Wrap(err, "error connecting to nats server")).
+			Send()
 	}
-	log.Info().Msg("Connected to NATS")
 
-	globalConf = yaml.UnmarshalGlobalConfig()
-	failCount = 0
+	ctx := &dto.BrabusContext{
+		FailCount:  &failCount,
+		GlobalConf: globalConf,
+		NC:         nc,
+		Quit:       quit,
+	}
+
+	log.Println("Connected to NATS")
 
 	for {
-		time.Sleep(2 * time.Second)
-
-		rawBytes, err = easyjson.Marshal(metrics.Collect())
-
-		if err != nil {
-			failCount++
-			if failCount > globalConf.Limits.FailLimit {
-				log.Fatal().Err(err).Msg("Fatal error marshalling metrics")
-			}
-
-			log.Error().Err(err).Msg("Error during marshalling metrics")
-			continue
+		select {
+		case <-tick:
+			brabus.ProcessMetrics(ctx, zerolog)
+		case code := <-quit:
+			log.Println("Quitting")
+			os.Exit(code)
 		}
-
-		err = nc.Publish("metrics", rawBytes)
-		if err != nil {
-			failCount++
-			if failCount > globalConf.Limits.FailLimit {
-				log.Fatal().Err(err).Msg("Fatal error during publish metrics")
-			}
-
-			log.Error().Err(err).Msg("Error during publish metrics")
-		}
-	}
+	} //todo отправлять пачками с timestamp
 }

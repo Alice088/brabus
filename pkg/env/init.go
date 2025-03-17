@@ -6,8 +6,12 @@ import (
 	"os"
 )
 
-func Init() {
-	err := godotenv.Load(".env")
+func Init(path ...string) {
+	if len(path) == 0 {
+		path[0] = ".env"
+	}
+
+	err := godotenv.Load(path[0])
 	if err != nil {
 		panic("Error loading .env file")
 	}
