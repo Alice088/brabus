@@ -8,11 +8,16 @@ import (
 )
 
 func Collect() dto.Metrics {
-	metrics := dto.Metrics{}
-
-	metrics.CPU.Usage = cpu.Usage()
-	metrics.RAM.Usage = ram.Usage()
-	metrics.Disk.Space = disk.Space()
-	metrics.Disk.Usage = disk.Usage()
-	return metrics
+	return dto.Metrics{
+		CPU: dto.CPU{
+			Usage: cpu.Usage(),
+		},
+		RAM: dto.RAM{
+			Usage: ram.Usage(),
+		},
+		Disk: dto.Disk{
+			Space: disk.Space(),
+			Usage: disk.Usage(),
+		},
+	}
 }
