@@ -8,7 +8,7 @@ import (
 
 func Init(path ...string) {
 	if len(path) == 0 {
-		path[0] = ".env"
+		path = []string{".env"}
 	}
 
 	err := godotenv.Load(path[0])

@@ -2,6 +2,7 @@ package dto
 
 type Global struct {
 	Limits Limits `yaml:"limits"`
+	Debug  bool   `yaml:"debug"`
 }
 
 type Limits struct {

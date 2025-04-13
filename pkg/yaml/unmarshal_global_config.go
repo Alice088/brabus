@@ -8,7 +8,7 @@ import (
 )
 
 func UnmarshalGlobalConfig() dto.Global {
-	data, err := os.ReadFile("./worker/global.yaml")
+	data, err := os.ReadFile("./configs/global.yaml")
 	if err != nil {
 		log.Fatalf("Error during reading file: %v\n", err)
 	}

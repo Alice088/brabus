@@ -1,2 +1,3 @@
 limit:
   fail_limit: 3
+debug: true

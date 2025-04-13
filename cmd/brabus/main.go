@@ -46,7 +46,8 @@ func main() {
 			brabus.ProcessMetrics(ctx, zerolog)
 		case code := <-quit:
 			log.Println("Quitting")
+			nc.Close()
 			os.Exit(code)
 		}
-	} //todo отправлять пачками с timestamp
+	}
 }

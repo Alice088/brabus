@@ -1,26 +1,30 @@
 #!/bin/bash
 
-#no forgot chmod +x run_easyjson.sh
+# Не забудьте сделать скрипт исполнимым: chmod +x run_easyjson.sh
 
 export PATH=$PATH:/home/gosha/go/bin
 
-
-if [ ! -d "../pkg/dto" ]; then
-  echo "Directory ./pkg/dto not found!"
+if [ -z "$1" ]; then
+  echo "Please provide the directory path"
   exit 1
 fi
 
-for file in ../pkg/dto/*.go; do
+DIRECTORY="$1"
+
+if [ ! -d "$DIRECTORY" ]; then
+  echo "Directory $DIRECTORY not found!"
+  exit 1
+fi
+
+for file in "$DIRECTORY"/*.go; do
   base=$(basename "$file" .go)
 
   if [[ "$base" == *_easyjson ]]; then
-    echo "Skipping generated file: $file"
     continue
   fi
 
-  generated="../pkg/dto/${base}_easyjson.go"
+  generated="$DIRECTORY/${base}_easyjson.go"
   if [ -f "$generated" ]; then
-    echo "Skipping file, generated file exists: $file"
     continue
   fi
 
@@ -28,6 +32,4 @@ for file in ../pkg/dto/*.go; do
   easyjson -all "$file"
 done
 
-
-
-echo "Finish generate easyjson"
+echo "Finish generation easyjson"

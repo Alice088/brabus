@@ -1,6 +1,9 @@
 package dto
 
+type GB = string
+type Percent = string
+
 type Disk struct {
-	Space string `json:"space"`
-	Usage string `json:"usage"`
+	Space GB      `json:"space"`
+	Usage Percent `json:"usage"`
 }
