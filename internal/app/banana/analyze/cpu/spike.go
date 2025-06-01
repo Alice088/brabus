@@ -1,7 +1,7 @@
 package cpu
 
 import (
-	"brabus/pkg/app/banana/storage/badger"
+	"brabus/internal/app/banana/storage/badger"
 	"brabus/pkg/dto"
 	bad "github.com/dgraph-io/badger/v4"
 	"github.com/pkg/errors"

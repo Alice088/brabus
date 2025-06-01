@@ -22,17 +22,37 @@ import (
     "usage" : "44.64"
   }
 */
-func Collect() dto.Metrics {
-	return dto.Metrics{
+func Collect() (*dto.Metrics, error) {
+	ramUsage, err := ram.Usage()
+	if err != nil {
+		return nil, err
+	}
+
+	cpuUsage, err := cpu.Usage()
+	if err != nil {
+		return nil, err
+	}
+
+	diskSpace, err := disk.Space()
+	if err != nil {
+		return nil, err
+	}
+
+	diskUsage, err := disk.Usage()
+	if err != nil {
+		return nil, err
+	}
+
+	return &dto.Metrics{
 		CPU: dto.CPU{
-			Usage: cpu.Usage(),
+			Usage: cpuUsage,
 		},
 		RAM: dto.RAM{
-			Usage: ram.Usage(),
+			Usage: ramUsage,
 		},
 		Disk: dto.Disk{
-			Space: disk.Space(),
-			Usage: disk.Usage(),
+			Space: diskSpace,
+			Usage: diskUsage,
 		},
-	}
+	}, nil
 }

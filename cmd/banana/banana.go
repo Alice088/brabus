@@ -1,21 +1,21 @@
 package main
 
 import (
-	"brabus/pkg/app/banana/analyze"
-	"brabus/pkg/app/banana/storage/badger"
+	"brabus/internal/app/banana/analyze"
+	"brabus/internal/app/banana/storage/badger"
 	"brabus/pkg/dto"
 	"brabus/pkg/env"
-	"brabus/pkg/logger"
+	"brabus/pkg/log"
 	"github.com/mailru/easyjson"
 	"github.com/nats-io/nats.go"
 )
 
 func main() {
 	env.Init()
-	log, closeLog := logger.Init()
+	log, closeLog := log.Init()
 	defer closeLog()
 
-	zerolog, closeLog := logger.Init()
+	zerolog, closeLog := log.Init()
 	defer closeLog()
 
 	db, err := badger.Init()
@@ -30,7 +30,7 @@ func main() {
 
 	nc, err := nats.Connect(nats.DefaultURL)
 	if err != nil {
-		log.Fatal().Stack().Err(logger.WrapError(err)).
+		log.Fatal().Stack().Err(log.WrapError(err)).
 			Str("NATS_URL", nats.DefaultURL).
 			Msg("Error connecting to nats server")
 	}
@@ -42,7 +42,7 @@ func main() {
 	_, err = nc.Subscribe("metrics", func(msg *nats.Msg) {
 		err = easyjson.Unmarshal(msg.Data, &metrics)
 		if err != nil {
-			log.Fatal().Stack().Err(logger.WrapError(err)).
+			log.Fatal().Stack().Err(log.WrapError(err)).
 				Str("NATS_URL", nats.DefaultURL).
 				Msg("Error unmarshalling metrics")
 		}
@@ -51,7 +51,7 @@ func main() {
 	})
 
 	if err != nil {
-		log.Fatal().Stack().Err(logger.WrapError(err)).
+		log.Fatal().Stack().Err(log.WrapError(err)).
 			Str("NATS_URL", nats.DefaultURL).
 			Msg("Error subscribing to NATS")
 	}

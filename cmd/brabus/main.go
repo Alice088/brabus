@@ -1,53 +1,49 @@
 package main
 
 import (
-	"brabus/pkg/app/brabus"
-	"brabus/pkg/dto"
+	app "brabus/internal/app/brabus"
 	"brabus/pkg/env"
-	"brabus/pkg/logger"
-	"brabus/pkg/yaml"
+	"brabus/pkg/log"
+	"context"
 	"github.com/nats-io/nats.go"
-	"github.com/pkg/errors"
-	"log"
 	"os"
-	"time"
+	"os/signal"
+	"syscall"
 )
 
 func main() {
 	env.Init()
-	zerolog, closeLog := logger.Init()
+
+	logger, closeLog := log.Init()
 	defer closeLog()
 
-	failCount := 0
-	tick := time.Tick(2 * time.Second)
-	quit := make(chan int)
-	globalConf := yaml.UnmarshalGlobalConfig()
-
-	nc, err := nats.Connect(nats.DefaultURL)
-	if err != nil {
-		zerolog.Fatal().Stack().
-			Str("NATS_URL", nats.DefaultURL).
-			Err(errors.Wrap(err, "error connecting to nats server")).
-			Send()
-	}
-
-	ctx := &dto.BrabusContext{
-		FailCount:  &failCount,
-		GlobalConf: globalConf,
-		NC:         nc,
-		Quit:       quit,
-	}
-
-	log.Println("Connected to NATS")
-
-	for {
-		select {
-		case <-tick:
-			brabus.ProcessMetrics(ctx, zerolog)
-		case code := <-quit:
-			log.Println("Quitting")
-			nc.Close()
-			os.Exit(code)
+	defer func() {
+		if err := recover(); err != nil {
+			logger.Error().Msgf("Recovery: %v", err)
 		}
+	}()
+
+	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGTERM, syscall.SIGINT)
+	defer stop()
+
+	connect, err := nats.Connect(nats.DefaultURL)
+
+	if err != nil {
+		logger.Fatal().
+			Str("NATS_URL", nats.DefaultURL).
+			Err(err).
+			Msg("error connecting to nats server")
+	}
+
+	logger.Info().Msg("Starting Brabus....")
+	brabus := app.NewBrabus(ctx, stop, connect)
+
+	brabus.Scan(logger)
+
+	select {
+	case <-ctx.Done():
+		logger.Info().Msg("Stoping program.")
+		connect.Close()
+		os.Exit(0)
 	}
 }

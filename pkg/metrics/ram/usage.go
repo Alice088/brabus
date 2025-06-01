@@ -1,16 +1,16 @@
 package ram
 
 import (
+	"fmt"
 	"github.com/shirou/gopsutil/mem"
-	"log"
 	"strconv"
 )
 
-func Usage() string {
+func Usage() (string, error) {
 	v, err := mem.VirtualMemory()
 	if err != nil {
-		log.Fatalln("Error during getting RAM usage:", err)
+		return "", fmt.Errorf("cannot get RAM usage: %v", err)
 	}
 
-	return strconv.FormatFloat(v.UsedPercent, 'f', 2, 32)
+	return strconv.FormatFloat(v.UsedPercent, 'f', 2, 32), nil
 }

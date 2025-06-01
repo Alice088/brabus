@@ -1,25 +1,25 @@
 package cpu
 
 import (
+	"fmt"
 	"github.com/c9s/goprocinfo/linux"
-	"log"
 	"strconv"
 	"time"
 )
 
-func Usage() []string {
+func Usage() ([]string, error) {
 	var usages []string
 
 	initialStat, err := linux.ReadStat("/proc/stat")
 	if err != nil {
-		log.Fatalf("Error during reading /proc/stat: %v\n\n", err)
+		return usages, fmt.Errorf("cannot read stat(1): %v", err)
 	}
 
 	time.Sleep(3 * time.Second)
 
 	newStat, err := linux.ReadStat("/proc/stat")
 	if err != nil {
-		log.Fatalf("Error during reading /proc/stat: %v\n\n", err)
+		return usages, fmt.Errorf("cannot read stat(2): %v", err)
 	}
 
 	for i, initialCPU := range initialStat.CPUStats {
@@ -36,5 +36,5 @@ func Usage() []string {
 		usages = append(usages, strconv.FormatFloat(cpuUsage, 'f', 2, 32))
 	}
 
-	return usages
+	return usages, nil
 }

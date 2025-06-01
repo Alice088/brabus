@@ -1,7 +1,7 @@
 package badger
 
 import (
-	"brabus/pkg/app/banana/storage/badger/iterarators"
+	"brabus/internal/app/banana/storage/badger/iterarators"
 	"brabus/pkg/dto"
 	"github.com/dgraph-io/badger/v4"
 	"github.com/mailru/easyjson"
