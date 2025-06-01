@@ -2,7 +2,6 @@ package brabus
 
 import (
 	"brabus/pkg/dto"
-	"brabus/pkg/yaml"
 	"context"
 	"github.com/nats-io/nats.go"
 )
@@ -14,11 +13,11 @@ type Brabus struct {
 	stop   context.CancelFunc
 }
 
-func NewBrabus(ctx context.Context, cancelFunc context.CancelFunc, nats *nats.Conn) Brabus {
+func NewBrabus(ctx context.Context, cancelFunc context.CancelFunc, nats *nats.Conn, config dto.Config) Brabus {
 	return Brabus{
 		ctx:    ctx,
 		stop:   cancelFunc,
 		Nats:   nats,
-		Config: yaml.UnmarshalGlobalConfig(),
+		Config: config,
 	}
 }

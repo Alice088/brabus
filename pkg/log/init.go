@@ -15,10 +15,6 @@ func Init() (*zerolog.Logger, CloseFunc) {
 	zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 
-	if os.Getenv("DEBUG") == "true" {
-		zerolog.SetGlobalLevel(zerolog.DebugLevel)
-	}
-
 	logFile, err := os.OpenFile("logs.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
 		panic(err)
