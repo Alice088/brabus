@@ -3,7 +3,6 @@ package main
 import (
 	"brabus/internal/app/brabus"
 	"brabus/pkg/config"
-	"brabus/pkg/env"
 	"brabus/pkg/log"
 	"brabus/pkg/utils"
 	"context"
@@ -19,8 +18,6 @@ import (
 var wg = sync.WaitGroup{}
 
 func main() {
-	env.Init()
-
 	logger, closeLog := log.Init()
 	defer closeLog()
 

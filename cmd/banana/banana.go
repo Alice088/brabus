@@ -5,7 +5,6 @@ import (
 	"brabus/internal/app/banana/storage/badger"
 	"brabus/pkg/config"
 	"brabus/pkg/dto"
-	"brabus/pkg/env"
 	"brabus/pkg/log"
 	"brabus/pkg/utils"
 	"fmt"
@@ -17,7 +16,6 @@ import (
 )
 
 func main() {
-	env.Init()
 	logger, closeLog := log.Init()
 	defer closeLog()
 

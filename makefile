@@ -3,8 +3,8 @@
 run:
 	docker-compose up -d
 	@echo "Starting services..."
-	@./bin/brabus > /dev/null 2>&1 &
-	@./bin/banana &
+	@./brabus > /dev/null 2>&1 &
+	@./banana &
 	@echo "Brabus running!"
 
 
