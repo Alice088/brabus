@@ -2,14 +2,12 @@ package main
 
 import (
 	"brabus/internal/app/banana/analyze"
-	"brabus/internal/app/banana/storage/badger"
 	"brabus/pkg/config"
 	"brabus/pkg/dto"
 	"brabus/pkg/log"
 	"brabus/pkg/utils"
 	"fmt"
 	"github.com/avast/retry-go"
-	bad "github.com/dgraph-io/badger/v4"
 	"github.com/mailru/easyjson"
 	"github.com/nats-io/nats.go"
 	"github.com/rs/zerolog"
@@ -26,22 +24,23 @@ func main() {
 		logger.Debug().Msgf("Config: %+v", conf)
 	}
 
-	db, err := badger.Init()
+	//db, err := badger.Init()
 
-	if err != nil {
-		logger.Fatal().Stack().Err(err).Msg("Error init badger")
-	}
-
-	defer func(db *bad.DB) {
-		err := db.Close()
-		if err != nil {
-			logger.Error().Err(err).Msg("Error closing db")
-		}
-	}(db)
+	//if err != nil {
+	//	logger.Fatal().Stack().Err(err).Msg("Error init badger")
+	//}
+	//
+	//defer func(db *bad.DB) {
+	//	err := db.Close()
+	//	if err != nil {
+	//		logger.Error().Err(err).Msg("Error closing db")
+	//	}
+	//}(db)
 
 	utils.DefaultRetryConfig = utils.DefaultRetry(conf.Limit.Fail, 1, logger)
 
 	var connect *nats.Conn
+	var err error
 	err = retry.Do(func() error {
 		connect, err = nats.Connect(nats.DefaultURL)
 		return err
