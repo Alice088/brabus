@@ -17,7 +17,7 @@ type Limit struct {
 }
 
 func Init() Config {
-	data, err := os.ReadFile("./config.yaml")
+	data, err := os.ReadFile("./prod/config.yaml")
 	if err != nil {
 		log.Fatalf("Error during reading file: %v\n", err)
 	}
