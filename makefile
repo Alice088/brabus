@@ -5,9 +5,9 @@ run:
 	@echo "Starting services..."
 	@./bin/brabus > /dev/null 2>&1 &
 	@./bin/banana &
-	@echo "Brabus running! (app2 logs visible, app1 runs silently)"
+	@echo "Brabus running!"
 
 # Останавливает всё
 stop:
-		pkill -f "brabus|banana"  # Убивает процессы
-		docker-compose down    # Останавливает контейнеры
+		pkill -f "brabus|banana"
+		docker-compose down
