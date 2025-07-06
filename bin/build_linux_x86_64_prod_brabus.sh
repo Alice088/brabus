@@ -1,7 +1,7 @@
 #!/bin/bash
 
 TARGET_DIR="./brabus_linux"
-ARCHIVE_NAME="brabus_package_$(date +%Y%m%d_%H%M%S).tar.gz"
+ARCHIVE_NAME="brabus_linux_x86_64_$(date +%Y%m%d_%H%M%S).tar.gz"
 
 # Создаем целевую директорию
 mkdir -p "$TARGET_DIR"
@@ -47,7 +47,7 @@ safe_copy() {
 # Копируем файлы
 safe_copy "./brabus/bin/brabus" "$TARGET_DIR/brabus"
 safe_copy "./brabus/bin/banana" "$TARGET_DIR/banana"
-safe_copy "./brabus/bin/makefile" "$TARGET_DIR/makefile"
+safe_copy "./brabus/makefile" "$TARGET_DIR/makefile"
 
 
 safe_copy "./brabus/docker-compose.yml" "$TARGET_DIR/docker-compose.yml"
