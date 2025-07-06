@@ -1,5 +1,3 @@
 limit:
   fail: 3
-metric:
-  cpu_stat_collect_duration: 3
 debug: false

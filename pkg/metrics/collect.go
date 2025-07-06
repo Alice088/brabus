@@ -1,12 +1,12 @@
 package metrics
 
 import (
-	"brabus/pkg/config"
 	"brabus/pkg/dto"
 	"brabus/pkg/metrics/cpu"
 	"brabus/pkg/metrics/disk"
 	"brabus/pkg/metrics/ram"
 	"github.com/rs/zerolog"
+	"strings"
 	"time"
 )
 
@@ -25,8 +25,7 @@ import (
     "usage" : "44.64"
   }
 */
-func Collect(logger *zerolog.Logger, conf config.Config) (*dto.Metrics, error) {
-
+func Collect(logger zerolog.Logger) (*dto.Metrics, error) {
 	t := time.Now()
 	ramUsage, err := ram.Usage()
 	logger.Debug().Msgf("Duration - [ram.usage]: %s", time.Since(t).String())
@@ -35,9 +34,9 @@ func Collect(logger *zerolog.Logger, conf config.Config) (*dto.Metrics, error) {
 	}
 
 	t = time.Now()
-	cpuUsage, err := cpu.Usage(conf)
-	logger.Debug().Msgf("Duration - [cpu.usage]: %s", time.Since(t).String())
-	if err != nil {
+	CPU, err := cpu.Usage(logger)
+	logger.Debug().Msgf("Duration - [CPU.usage]: %s", time.Since(t).String())
+	if err != nil && !strings.Contains(err.Error(), "first run") {
 		return nil, err
 	}
 
@@ -56,9 +55,7 @@ func Collect(logger *zerolog.Logger, conf config.Config) (*dto.Metrics, error) {
 	}
 
 	return &dto.Metrics{
-		CPU: dto.CPU{
-			Usage: cpuUsage,
-		},
+		CPU: CPU,
 		RAM: dto.RAM{
 			Usage: ramUsage,
 		},

@@ -1,5 +1,7 @@
 package dto
 
+import "brabus/pkg/utils"
+
 type RAM struct {
-	Usage Percent `json:"usage"`
+	Usage utils.PercentStr `json:"usage"`
 }

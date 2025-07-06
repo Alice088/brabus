@@ -25,7 +25,8 @@ for file in "$DIRECTORY"/*.go; do
 
   generated="$DIRECTORY/${base}_easyjson.go"
   if [ -f "$generated" ]; then
-    continue
+    rm -f "$generated"
+    echo "Remove $generated"
   fi
 
   echo "Processing file: $file"

@@ -8,17 +8,12 @@ import (
 )
 
 type Config struct {
-	Limit  Limit  `yaml:"limit"`
-	Metric Metric `yaml:"metric"`
-	Debug  bool   `yaml:"debug"`
+	Limit Limit `yaml:"limit"`
+	Debug bool  `yaml:"debug"`
 }
 
 type Limit struct {
 	Fail uint8 `yaml:"fail"`
-}
-
-type Metric struct {
-	CpuStatCollectDuration int64 `yaml:"cpu_stat_collect_duration"`
 }
 
 func Init() Config {
@@ -41,10 +36,6 @@ func Init() Config {
 func (conf Config) Valid() error {
 	if conf.Limit.Fail == 0 {
 		return errors.New("limit -> fail: not set")
-	}
-
-	if conf.Metric.CpuStatCollectDuration == 0 {
-		return errors.New("metric -> cpu_stat_collect_duration: not set")
 	}
 
 	return nil

@@ -10,7 +10,7 @@ import (
 
 type CloseFunc func()
 
-func Init() (*zerolog.Logger, CloseFunc) {
+func Init() (zerolog.Logger, CloseFunc) {
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 	zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
@@ -24,7 +24,7 @@ func Init() (*zerolog.Logger, CloseFunc) {
 	multi := zerolog.MultiLevelWriter(consoleWriter, logFile)
 	logger := zerolog.New(multi).With().Timestamp().Logger()
 
-	return &logger, func() {
+	return logger, func() {
 		Close(logFile)
 	}
 }

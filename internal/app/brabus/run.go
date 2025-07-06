@@ -13,7 +13,7 @@ type Shutdown struct {
 	Os  chan os.Signal
 }
 
-func (brabus *Brabus) Run(logger *zerolog.Logger, wg *sync.WaitGroup, shutdown Shutdown) {
+func (brabus *Brabus) Run(logger zerolog.Logger, wg *sync.WaitGroup, shutdown Shutdown) {
 	ticker := time.NewTicker(2 * time.Second)
 
 	for {
@@ -22,7 +22,7 @@ func (brabus *Brabus) Run(logger *zerolog.Logger, wg *sync.WaitGroup, shutdown S
 			wg.Add(1)
 			go func() {
 				defer wg.Done()
-				brabus.ProcessMetrics(logger, shutdown.Os)
+				brabus.CollectMetrics(logger, shutdown.Os)
 			}()
 			wg.Wait()
 		case <-shutdown.Ctx.Done():

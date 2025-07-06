@@ -4,6 +4,6 @@ import (
 	"brabus/pkg/dto"
 )
 
-func AnalyzeCPU(metrics dto.Metrics) {
+func Disk(metrics dto.Metrics) {
 
 }

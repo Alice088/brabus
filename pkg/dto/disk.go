@@ -1,9 +1,8 @@
 package dto
 
-type GB = string
-type Percent = string
+import "brabus/pkg/utils"
 
 type Disk struct {
-	Space GB      `json:"space"`
-	Usage Percent `json:"usage"`
+	Space utils.GB         `json:"space"`
+	Usage utils.PercentStr `json:"usage"`
 }

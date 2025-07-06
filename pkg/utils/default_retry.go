@@ -10,7 +10,7 @@ var (
 	DefaultRetryConfig []retry.Option
 )
 
-func DefaultRetry(attempts uint8, seconds time.Duration, logger *zerolog.Logger) []retry.Option {
+func DefaultRetry(attempts uint8, seconds time.Duration, logger zerolog.Logger) []retry.Option {
 	return []retry.Option{
 		retry.Attempts(uint(attempts)),
 		retry.OnRetry(func(n uint, err error) {

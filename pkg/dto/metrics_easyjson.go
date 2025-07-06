@@ -39,7 +39,7 @@ func easyjson2220f231DecodeBrabusPkgDto(in *jlexer.Lexer, out *Metrics) {
 		case "cpu":
 			(out.CPU).UnmarshalEasyJSON(in)
 		case "ram":
-			easyjson2220f231DecodeBrabusPkgDto1(in, &out.RAM)
+			(out.RAM).UnmarshalEasyJSON(in)
 		case "disk":
 			(out.Disk).UnmarshalEasyJSON(in)
 		default:
@@ -64,7 +64,7 @@ func easyjson2220f231EncodeBrabusPkgDto(out *jwriter.Writer, in Metrics) {
 	{
 		const prefix string = ",\"ram\":"
 		out.RawString(prefix)
-		easyjson2220f231EncodeBrabusPkgDto1(out, in.RAM)
+		(in.RAM).MarshalEasyJSON(out)
 	}
 	{
 		const prefix string = ",\"disk\":"
@@ -96,46 +96,4 @@ func (v *Metrics) UnmarshalJSON(data []byte) error {
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *Metrics) UnmarshalEasyJSON(l *jlexer.Lexer) {
 	easyjson2220f231DecodeBrabusPkgDto(l, v)
-}
-func easyjson2220f231DecodeBrabusPkgDto1(in *jlexer.Lexer, out *RAM) {
-	isTopLevel := in.IsStart()
-	if in.IsNull() {
-		if isTopLevel {
-			in.Consumed()
-		}
-		in.Skip()
-		return
-	}
-	in.Delim('{')
-	for !in.IsDelim('}') {
-		key := in.UnsafeFieldName(false)
-		in.WantColon()
-		if in.IsNull() {
-			in.Skip()
-			in.WantComma()
-			continue
-		}
-		switch key {
-		case "usage":
-			out.Usage = string(in.String())
-		default:
-			in.SkipRecursive()
-		}
-		in.WantComma()
-	}
-	in.Delim('}')
-	if isTopLevel {
-		in.Consumed()
-	}
-}
-func easyjson2220f231EncodeBrabusPkgDto1(out *jwriter.Writer, in RAM) {
-	out.RawByte('{')
-	first := true
-	_ = first
-	{
-		const prefix string = ",\"usage\":"
-		out.RawString(prefix[1:])
-		out.String(string(in.Usage))
-	}
-	out.RawByte('}')
 }

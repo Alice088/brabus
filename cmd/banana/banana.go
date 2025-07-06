@@ -8,6 +8,7 @@ import (
 	"brabus/pkg/env"
 	"brabus/pkg/log"
 	"brabus/pkg/utils"
+	"fmt"
 	"github.com/avast/retry-go"
 	bad "github.com/dgraph-io/badger/v4"
 	"github.com/mailru/easyjson"
@@ -40,8 +41,6 @@ func main() {
 		}
 	}(db)
 
-	metrics := dto.Metrics{}
-
 	utils.DefaultRetryConfig = utils.DefaultRetry(conf.Limit.Fail, 1, logger)
 
 	var connect *nats.Conn
@@ -59,24 +58,30 @@ func main() {
 
 	defer connect.Close()
 
-	logger.Info().Msg("Connected to NATS")
-
-	_, err = nc.Subscribe("metrics", func(msg *nats.Msg) {
-		err = easyjson.Unmarshal(msg.Data, &metrics)
-		if err != nil {
-			logger.Fatal().Stack().Err(logger.WrapError(err)).
-				Str("NATS_URL", nats.DefaultURL).
-				Msg("Error unmarshalling metrics")
-		}
-
-		analyze.Metrics(metrics)
-	})
-
+	metrics := make(chan *nats.Msg)
+	_, err = connect.ChanSubscribe("metrics", metrics)
 	if err != nil {
-		logger.Fatal().Stack().Err(logger.WrapError(err)).
-			Str("NATS_URL", nats.DefaultURL).
+		logger.Fatal().
+			Err(err).
 			Msg("Error subscribing to NATS")
 	}
 
-	select {}
+	fmt.Println("--------------------------------WARNINGS--------------------------------------")
+
+	for {
+		select {
+		case msg := <-metrics:
+			var metric dto.Metrics
+			err = easyjson.Unmarshal(msg.Data, &metric)
+			if err != nil {
+				logger.Error().
+					Err(err).
+					Msg("Error unmarshalling metrics")
+			}
+
+			logger.Debug().Msgf("Metrics received: %+v", metric)
+
+			analyze.Metrics(metric, logger)
+		}
+	}
 }

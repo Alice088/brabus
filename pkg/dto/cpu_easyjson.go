@@ -17,7 +17,108 @@ var (
 	_ easyjson.Marshaler
 )
 
-func easyjson12b59464DecodeBrabusPkgDto(in *jlexer.Lexer, out *CPU) {
+func easyjson12b59464DecodeBrabusPkgDto(in *jlexer.Lexer, out *CPUStats) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeFieldName(false)
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "user":
+			out.User = float64(in.Float64())
+		case "system":
+			out.System = float64(in.Float64())
+		case "idle":
+			out.Idle = float64(in.Float64())
+		case "iowait":
+			out.IOWait = float64(in.Float64())
+		case "steal":
+			out.Steal = float64(in.Float64())
+		case "nice":
+			out.Nice = float64(in.Float64())
+		default:
+			in.SkipRecursive()
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjson12b59464EncodeBrabusPkgDto(out *jwriter.Writer, in CPUStats) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	{
+		const prefix string = ",\"user\":"
+		out.RawString(prefix[1:])
+		out.Float64(float64(in.User))
+	}
+	{
+		const prefix string = ",\"system\":"
+		out.RawString(prefix)
+		out.Float64(float64(in.System))
+	}
+	{
+		const prefix string = ",\"idle\":"
+		out.RawString(prefix)
+		out.Float64(float64(in.Idle))
+	}
+	{
+		const prefix string = ",\"iowait\":"
+		out.RawString(prefix)
+		out.Float64(float64(in.IOWait))
+	}
+	{
+		const prefix string = ",\"steal\":"
+		out.RawString(prefix)
+		out.Float64(float64(in.Steal))
+	}
+	{
+		const prefix string = ",\"nice\":"
+		out.RawString(prefix)
+		out.Float64(float64(in.Nice))
+	}
+	out.RawByte('}')
+}
+
+// MarshalJSON supports json.Marshaler interface
+func (v CPUStats) MarshalJSON() ([]byte, error) {
+	w := jwriter.Writer{}
+	easyjson12b59464EncodeBrabusPkgDto(&w, v)
+	return w.Buffer.BuildBytes(), w.Error
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v CPUStats) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjson12b59464EncodeBrabusPkgDto(w, v)
+}
+
+// UnmarshalJSON supports json.Unmarshaler interface
+func (v *CPUStats) UnmarshalJSON(data []byte) error {
+	r := jlexer.Lexer{Data: data}
+	easyjson12b59464DecodeBrabusPkgDto(&r, v)
+	return r.Error()
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *CPUStats) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjson12b59464DecodeBrabusPkgDto(l, v)
+}
+func easyjson12b59464DecodeBrabusPkgDto1(in *jlexer.Lexer, out *CPU) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -44,20 +145,36 @@ func easyjson12b59464DecodeBrabusPkgDto(in *jlexer.Lexer, out *CPU) {
 				in.Delim('[')
 				if out.Usage == nil {
 					if !in.IsDelim(']') {
-						out.Usage = make([]string, 0, 4)
+						out.Usage = make([]CPUStats, 0, 1)
 					} else {
-						out.Usage = []string{}
+						out.Usage = []CPUStats{}
 					}
 				} else {
 					out.Usage = (out.Usage)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v1 string
-					v1 = string(in.String())
+					var v1 CPUStats
+					(v1).UnmarshalEasyJSON(in)
 					out.Usage = append(out.Usage, v1)
 					in.WantComma()
 				}
 				in.Delim(']')
+			}
+		case "average":
+			(out.Average).UnmarshalEasyJSON(in)
+		case "cores":
+			out.Cores = int(in.Int())
+		case "model":
+			out.Model = string(in.String())
+		case "load1":
+			out.Load1 = float64(in.Float64())
+		case "load5":
+			out.Load5 = float64(in.Float64())
+		case "load15":
+			out.Load15 = float64(in.Float64())
+		case "timestamp":
+			if data := in.Raw(); in.Ok() {
+				in.AddError((out.Timestamp).UnmarshalJSON(data))
 			}
 		default:
 			in.SkipRecursive()
@@ -69,7 +186,7 @@ func easyjson12b59464DecodeBrabusPkgDto(in *jlexer.Lexer, out *CPU) {
 		in.Consumed()
 	}
 }
-func easyjson12b59464EncodeBrabusPkgDto(out *jwriter.Writer, in CPU) {
+func easyjson12b59464EncodeBrabusPkgDto1(out *jwriter.Writer, in CPU) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -84,10 +201,45 @@ func easyjson12b59464EncodeBrabusPkgDto(out *jwriter.Writer, in CPU) {
 				if v2 > 0 {
 					out.RawByte(',')
 				}
-				out.String(string(v3))
+				(v3).MarshalEasyJSON(out)
 			}
 			out.RawByte(']')
 		}
+	}
+	{
+		const prefix string = ",\"average\":"
+		out.RawString(prefix)
+		(in.Average).MarshalEasyJSON(out)
+	}
+	{
+		const prefix string = ",\"cores\":"
+		out.RawString(prefix)
+		out.Int(int(in.Cores))
+	}
+	{
+		const prefix string = ",\"model\":"
+		out.RawString(prefix)
+		out.String(string(in.Model))
+	}
+	{
+		const prefix string = ",\"load1\":"
+		out.RawString(prefix)
+		out.Float64(float64(in.Load1))
+	}
+	{
+		const prefix string = ",\"load5\":"
+		out.RawString(prefix)
+		out.Float64(float64(in.Load5))
+	}
+	{
+		const prefix string = ",\"load15\":"
+		out.RawString(prefix)
+		out.Float64(float64(in.Load15))
+	}
+	{
+		const prefix string = ",\"timestamp\":"
+		out.RawString(prefix)
+		out.Raw((in.Timestamp).MarshalJSON())
 	}
 	out.RawByte('}')
 }
@@ -95,23 +247,23 @@ func easyjson12b59464EncodeBrabusPkgDto(out *jwriter.Writer, in CPU) {
 // MarshalJSON supports json.Marshaler interface
 func (v CPU) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	easyjson12b59464EncodeBrabusPkgDto(&w, v)
+	easyjson12b59464EncodeBrabusPkgDto1(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v CPU) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjson12b59464EncodeBrabusPkgDto(w, v)
+	easyjson12b59464EncodeBrabusPkgDto1(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *CPU) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	easyjson12b59464DecodeBrabusPkgDto(&r, v)
+	easyjson12b59464DecodeBrabusPkgDto1(&r, v)
 	return r.Error()
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *CPU) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjson12b59464DecodeBrabusPkgDto(l, v)
+	easyjson12b59464DecodeBrabusPkgDto1(l, v)
 }

@@ -15,9 +15,9 @@ var (
 	rawBytes         []byte
 )
 
-func (brabus *Brabus) ProcessMetrics(logger *zerolog.Logger, signal chan os.Signal) {
+func (brabus *Brabus) CollectMetrics(logger zerolog.Logger, signal chan os.Signal) {
 	tS := time.Now()
-	collectedMetrics, err = metrics.Collect(logger, brabus.Config)
+	collectedMetrics, err = metrics.Collect(logger)
 	tE := time.Since(tS)
 
 	if err != nil {
