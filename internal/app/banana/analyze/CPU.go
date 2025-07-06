@@ -9,6 +9,7 @@ import (
 
 func CPU(metrics dto.Metrics, logger zerolog.Logger) {
 	anomalies := new([]string)
+
 	cpu.CheckAnomalies(metrics.CPU, anomalies)
 	cpu.CheckLoad(metrics.CPU, anomalies)
 
