@@ -1,10 +1,13 @@
 package metrics
 
 import (
+	"brabus/pkg/config"
 	"brabus/pkg/dto"
 	"brabus/pkg/metrics/cpu"
 	"brabus/pkg/metrics/disk"
 	"brabus/pkg/metrics/ram"
+	"github.com/rs/zerolog"
+	"time"
 )
 
 // Collect  metrics of a machine
@@ -22,23 +25,32 @@ import (
     "usage" : "44.64"
   }
 */
-func Collect() (*dto.Metrics, error) {
+func Collect(logger *zerolog.Logger, conf config.Config) (*dto.Metrics, error) {
+
+	t := time.Now()
 	ramUsage, err := ram.Usage()
+	logger.Debug().Msgf("Duration - [ram.usage]: %s", time.Since(t).String())
 	if err != nil {
 		return nil, err
 	}
 
-	cpuUsage, err := cpu.Usage()
+	t = time.Now()
+	cpuUsage, err := cpu.Usage(conf)
+	logger.Debug().Msgf("Duration - [cpu.usage]: %s", time.Since(t).String())
 	if err != nil {
 		return nil, err
 	}
 
+	t = time.Now()
 	diskSpace, err := disk.Space()
+	logger.Debug().Msgf("Duration - [disk.space]: %s", time.Since(t).String())
 	if err != nil {
 		return nil, err
 	}
 
+	t = time.Now()
 	diskUsage, err := disk.Usage()
+	logger.Debug().Msgf("Duration - [disk.usage]: %s", time.Since(t).String())
 	if err != nil {
 		return nil, err
 	}

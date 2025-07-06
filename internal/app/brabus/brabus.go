@@ -1,22 +1,17 @@
 package brabus
 
 import (
-	"brabus/pkg/dto"
-	"context"
+	"brabus/pkg/config"
 	"github.com/nats-io/nats.go"
 )
 
 type Brabus struct {
 	Nats   *nats.Conn
-	Config dto.Config
-	ctx    context.Context
-	stop   context.CancelFunc
+	Config config.Config
 }
 
-func NewBrabus(ctx context.Context, cancelFunc context.CancelFunc, nats *nats.Conn, config dto.Config) Brabus {
+func New(nats *nats.Conn, config config.Config) Brabus {
 	return Brabus{
-		ctx:    ctx,
-		stop:   cancelFunc,
 		Nats:   nats,
 		Config: config,
 	}

@@ -1,13 +1,14 @@
 package cpu
 
 import (
+	"brabus/pkg/config"
 	"fmt"
 	"github.com/c9s/goprocinfo/linux"
 	"strconv"
 	"time"
 )
 
-func Usage() ([]string, error) {
+func Usage(conf config.Config) ([]string, error) {
 	var usages []string
 
 	initialStat, err := linux.ReadStat("/proc/stat")
@@ -15,7 +16,7 @@ func Usage() ([]string, error) {
 		return usages, fmt.Errorf("cannot read stat(1): %v", err)
 	}
 
-	time.Sleep(3 * time.Second)
+	time.Sleep(time.Duration(conf.Metric.CpuStatCollectDuration) * time.Second)
 
 	newStat, err := linux.ReadStat("/proc/stat")
 	if err != nil {

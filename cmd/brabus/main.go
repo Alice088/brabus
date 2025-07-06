@@ -1,24 +1,22 @@
 package main
 
 import (
-	app "brabus/internal/app/brabus"
+	"brabus/internal/app/brabus"
+	"brabus/pkg/config"
 	"brabus/pkg/env"
-	"brabus/pkg/exretry"
 	"brabus/pkg/log"
-	"brabus/pkg/yaml"
+	"brabus/pkg/utils"
 	"context"
 	"github.com/avast/retry-go"
 	"github.com/nats-io/nats.go"
 	"github.com/rs/zerolog"
 	"os"
 	"os/signal"
+	"sync"
 	"syscall"
 )
 
-var (
-	connect *nats.Conn
-	err     error
-)
+var wg = sync.WaitGroup{}
 
 func main() {
 	env.Init()
@@ -26,28 +24,33 @@ func main() {
 	logger, closeLog := log.Init()
 	defer closeLog()
 
-	config := yaml.UnmarshalGlobalConfig()
+	conf := config.Init()
 
-	if config.Debug {
+	if conf.Debug {
 		zerolog.SetGlobalLevel(zerolog.DebugLevel)
+		logger.Debug().Msgf("Config: %+v", conf)
 	}
 
-	exretry.DefaultRetryConfig = exretry.DefaultRetry(config.Limits.FailLimit, 1, logger)
+	utils.DefaultRetryConfig = utils.DefaultRetry(conf.Limit.Fail, 1, logger)
 
 	defer func() {
 		if err := recover(); err != nil {
 			logger.Error().Msgf("Recovery: %v", err)
+			wg.Wait()
+			os.Exit(1)
 		}
 	}()
 
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGTERM, syscall.SIGINT)
 	defer stop()
 
-	logger.Info().Msg("connecting to NATS...")
+	var connect *nats.Conn
+	var err error
 	err = retry.Do(func() error {
 		connect, err = nats.Connect(nats.DefaultURL)
 		return err
-	}, exretry.DefaultRetryConfig...)
+	}, utils.DefaultRetryConfig...)
+	defer connect.Close()
 
 	if err != nil {
 		logger.Fatal().
@@ -56,15 +59,25 @@ func main() {
 			Msg("error connecting to nats server")
 	}
 
-	logger.Info().Msg("Starting Brabus....")
-	brabus := app.NewBrabus(ctx, stop, connect, config)
+	logger.Info().Msg("Brabus started")
 
-	brabus.Scan(logger)
+	signals := make(chan os.Signal, 1)
+	defer close(signals)
+	signal.Notify(signals, os.Interrupt, syscall.SIGTERM)
+
+	b := brabus.New(connect, conf)
+	go b.Run(logger, &wg, brabus.Shutdown{
+		Os:  signals,
+		Ctx: ctx,
+	})
 
 	select {
+	case <-signals:
+		logger.Info().Msg("Stopping...")
+		os.Exit(0)
 	case <-ctx.Done():
-		logger.Info().Msg("Stoping program.")
-		connect.Close()
+		logger.Info().Msg("Stopping...")
+		wg.Wait()
 		os.Exit(0)
 	}
 }

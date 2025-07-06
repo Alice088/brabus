@@ -23,7 +23,6 @@ func Init() (*zerolog.Logger, CloseFunc) {
 	consoleWriter := zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.DateTime}
 	multi := zerolog.MultiLevelWriter(consoleWriter, logFile)
 	logger := zerolog.New(multi).With().Timestamp().Logger()
-	logger.Debug().Msg("Logger initialized")
 
 	return &logger, func() {
 		Close(logFile)

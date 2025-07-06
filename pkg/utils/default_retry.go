@@ -1,4 +1,4 @@
-package exretry
+package utils
 
 import (
 	"github.com/avast/retry-go"

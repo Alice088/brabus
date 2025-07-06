@@ -1,3 +1,5 @@
 limit:
-  fail_limit: 3
-debug: true
+  fail: 3
+metric:
+  cpu_stat_collect_duration: 3
+debug: false
