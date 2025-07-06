@@ -11,6 +11,7 @@ go.sum
 .idea
 vendor
 logs.log
+tmp
 
 
 # Test binary, build with `go test -c`
