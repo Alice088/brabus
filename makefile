@@ -7,7 +7,7 @@ run:
 	@./bin/banana &
 	@echo "Brabus running!"
 
-# Останавливает всё
+
 stop:
 		pkill -f "brabus|banana"
 		docker-compose down
