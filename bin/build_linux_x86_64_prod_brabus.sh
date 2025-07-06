@@ -47,6 +47,9 @@ safe_copy() {
 # Копируем файлы
 safe_copy "./brabus/bin/brabus" "$TARGET_DIR/brabus"
 safe_copy "./brabus/bin/banana" "$TARGET_DIR/banana"
+safe_copy "./brabus/bin/makefile" "$TARGET_DIR/makefile"
+
+
 safe_copy "./brabus/docker-compose.yml" "$TARGET_DIR/docker-compose.yml"
 safe_copy_config "./brabus/config.yaml" "$TARGET_DIR/config.yaml"
 
